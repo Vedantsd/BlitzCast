@@ -11,7 +11,7 @@ with open(DATA_PATH) as f:
 REGIONS = DATA["regions"]
 TARGETS = DATA["targets"]
 
-app = Flask(__name__, static_folder="public", static_url_path="")
+app = Flask(__name__)
 
 
 @app.route("/")
