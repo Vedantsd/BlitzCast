@@ -59,8 +59,6 @@ REGIONS = {
 
 DAYS = pd.date_range(START, END, freq="D")
 
-DATASET_DIR = "datasets"
-
 
 def simulate_region_truth(cfg):
     n = len(DAYS)
@@ -164,7 +162,10 @@ def simulate_model_forecasts(truth: pd.DataFrame, lead_h: int, rng):
 
 
 def main():
-    os.makedirs(DATASET_DIR, exist_ok=True)
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    dataset_dir = os.path.join(base_dir, "datasets")
+    for d in ["observations", "raw", "processed"]:
+        os.makedirs(os.path.join(dataset_dir, d), exist_ok=True)
 
     obs_frames, nwp_frames, ai_frames, ens_frames, processed_frames = [], [], [], [], []
 
@@ -214,11 +215,11 @@ def main():
             processed_frames.append(merged)
 
     observations = pd.concat(obs_frames, ignore_index=True)
-    observations.to_csv(f"{DATASET_DIR}/era5_observations.csv", index=False)
+    observations.to_csv(os.path.join(dataset_dir, "observations", "era5_observations.csv"), index=False)
 
-    pd.concat(nwp_frames, ignore_index=True).to_csv(f"{DATASET_DIR}/nwp_forecasts.csv", index=False)
-    pd.concat(ai_frames, ignore_index=True).to_csv(f"{DATASET_DIR}/ai_forecasts.csv", index=False)
-    pd.concat(ens_frames, ignore_index=True).to_csv(f"{DATASET_DIR}/ensemble_forecasts.csv", index=False)
+    pd.concat(nwp_frames, ignore_index=True).to_csv(os.path.join(dataset_dir, "raw", "nwp_forecasts.csv"), index=False)
+    pd.concat(ai_frames, ignore_index=True).to_csv(os.path.join(dataset_dir, "raw", "ai_forecasts.csv"), index=False)
+    pd.concat(ens_frames, ignore_index=True).to_csv(os.path.join(dataset_dir, "raw", "ensemble_forecasts.csv"), index=False)
 
     processed = pd.concat(processed_frames, ignore_index=True)
     cols = ["date", "region", "latitude", "longitude", "forecast_lead_time_hours", "month", "season",
@@ -230,13 +231,13 @@ def main():
             "nwp_rain_hist_mae", "ai_rain_hist_mae", "ensemble_rain_hist_mae",
             "nwp_wind_hist_mae", "ai_wind_hist_mae", "ensemble_wind_hist_mae"]
     processed = processed[cols].sort_values(["region", "date", "forecast_lead_time_hours"])
-    processed.to_csv(f"{DATASET_DIR}/blitzcast_training_data.csv", index=False)
+    processed.to_csv(os.path.join(dataset_dir, "processed", "blitzcast_training_data.csv"), index=False)
 
-    print(f"{DATASET_DIR}/era5_observations.csv     {len(observations):>7,} rows")
-    print(f"{DATASET_DIR}/nwp_forecasts.csv          {sum(len(f) for f in nwp_frames):>7,} rows")
-    print(f"{DATASET_DIR}/ai_forecasts.csv           {sum(len(f) for f in ai_frames):>7,} rows")
-    print(f"{DATASET_DIR}/ensemble_forecasts.csv     {sum(len(f) for f in ens_frames):>7,} rows")
-    print(f"{DATASET_DIR}/blitzcast_training_data.csv   {len(processed):>7,} rows")
+    print(f"datasets/observations/era5_observations.csv     {len(observations):>7,} rows")
+    print(f"datasets/raw/nwp_forecasts.csv                   {sum(len(f) for f in nwp_frames):>7,} rows")
+    print(f"datasets/raw/ai_forecasts.csv                    {sum(len(f) for f in ai_frames):>7,} rows")
+    print(f"datasets/raw/ensemble_forecasts.csv              {sum(len(f) for f in ens_frames):>7,} rows")
+    print(f"datasets/processed/blitzcast_training_data.csv   {len(processed):>7,} rows")
 
 
 if __name__ == "__main__":
