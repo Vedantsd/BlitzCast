@@ -40,23 +40,16 @@ h1, h2, h3 {
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .brand-mark {
-  width: 30px;
-  height: 30px;
-  background: var(--yellow);
+  width: 56px;
+  height: 56px;
+  background: var(--white);
   border-radius: 50%;
-  position: relative;
-}
-
-.brand-mark::after {
-  content: "";
-  position: absolute;
-  inset: 8px;
-  background: var(--ink);
-  clip-path: polygon(55% 0%, 20% 55%, 45% 55%, 30% 100%, 80% 40%, 52% 40%);
+  object-fit: contain;
+  display: block;
 }
 
 .brand-name {
