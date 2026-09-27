@@ -1,126 +1,239 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlitzCast</title>
+<title>BlitzCast — Next-Gen AI Weather Intelligence</title>
 <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/index-style.css') }}">
+<script>
+  try {
+    const savedTheme = localStorage.getItem("blitzcast-theme");
+    if (savedTheme === "dark" || (!savedTheme && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches === false && false)) {
+      document.documentElement.dataset.theme = savedTheme || "light";
+    } else if (savedTheme === "light") {
+      document.documentElement.dataset.theme = "light";
+    }
+  } catch {}
+</script>
 </head>
 <body>
 <header class="topbar">
-  <div class="brand">
-    <img class="brand-mark" src="{{ url_for('static', filename='img/logo.png') }}" alt="BlitzCast logo">
-    <span class="brand-name">BlitzCast</span>
-  </div>
-  <div class="controls">
-    <label class="control">
-      <span>Region</span>
-      <select id="region-select">
-        {% for region in regions %}
-        <option value="{{ region }}">{{ region }}</option>
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark-wrap">
+        <img class="brand-mark" src="{{ url_for('static', filename='img/logo.png') }}" alt="BlitzCast logo">
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">BlitzCast</span>
+        <span class="brand-tagline">AI Blend Intelligence</span>
+      </div>
+    </div>
+    
+    <div class="controls">
+      <div class="control-group">
+        <label class="control-select-label" for="region-select">
+          <svg class="control-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span class="sr-only">Region</span>
+        </label>
+        <div class="select-wrapper">
+          <select id="region-select" aria-label="Select Region">
+            {% for region in regions %}
+            <option value="{{ region }}">{{ region }}</option>
+            {% endfor %}
+          </select>
+          <svg class="select-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="target-tabs" id="target-tabs" role="tablist" aria-label="Forecast variable selector">
+        {% for target in targets %}
+        <button class="target-tab {% if loop.first %}active{% endif %}" data-target="{{ target }}" role="tab" aria-selected="{% if loop.first %}true{% else %}false{% endif %}">
+          {% if target == 'temp' %}
+          <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg>
+          {% elif target == 'rain' %}
+          <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m9.2 22 3-7"/><path d="m9 13-3 7"/><path d="m17 13-3 7"/></svg>
+          {% elif target == 'wind' %}
+          <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>
+          {% endif %}
+          <span>{{ {"temp": "Temperature", "rain": "Rainfall", "wind": "Wind"}[target] }}</span>
+        </button>
         {% endfor %}
-      </select>
-    </label>
-    <div class="target-tabs" id="target-tabs">
-      {% for target in targets %}
-      <button class="target-tab {% if loop.first %}active{% endif %}" data-target="{{ target }}">
-        {{ {"temp": "Temperature", "rain": "Rainfall", "wind": "Wind"}[target] }}
+      </div>
+
+      <!-- Sun & Moon Theme Toggle Button -->
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme" title="Switch theme">
+        <!-- Sun icon (shown in light mode) -->
+        <svg class="theme-icon theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2"></path>
+          <path d="M12 20v2"></path>
+          <path d="m4.93 4.93 1.41 1.41"></path>
+          <path d="m17.66 17.66 1.41 1.41"></path>
+          <path d="M2 12h2"></path>
+          <path d="M20 12h2"></path>
+          <path d="m6.34 17.66-1.41 1.41"></path>
+          <path d="m19.07 4.93-1.41 1.41"></path>
+        </svg>
+        <!-- Moon icon (shown in dark mode) -->
+        <svg class="theme-icon theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+        </svg>
       </button>
-      {% endfor %}
     </div>
   </div>
 </header>
 
 <main>
-  <section class="hero">
-    <div class="hero-reading">
-      <span class="hero-label" id="hero-region">Pune</span>
-      <span class="hero-value" id="hero-value">--</span>
-      <span class="hero-unit" id="hero-unit"></span>
-      <span class="hero-regime" id="hero-regime">Loading conditions</span>
-    </div>
-    <div class="hero-stats" id="hero-stats">
-      <div class="stat">
-        <span class="stat-label">Humidity</span>
-        <span class="stat-value" id="stat-humidity">--</span>
+  <!-- Hero Section -->
+  <section class="hero" id="hero-card">
+    <div class="hero-backdrop" aria-hidden="true"></div>
+    <div class="hero-content">
+      <div class="hero-reading">
+        <div class="hero-location-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span class="hero-label" id="hero-region">Bengaluru</span>
+        </div>
+        <div class="hero-digits">
+          <span class="hero-value" id="hero-value">--</span>
+          <span class="hero-unit" id="hero-unit">°C</span>
+        </div>
+        <div class="hero-regime-wrap">
+          <span class="regime-status-dot" aria-hidden="true"></span>
+          <span class="hero-regime" id="hero-regime">Loading conditions...</span>
+        </div>
       </div>
-      <div class="stat">
-        <span class="stat-label">Pressure</span>
-        <span class="stat-value" id="stat-pressure">--</span>
-      </div>
-      <div class="stat">
-        <span class="stat-label">Confidence</span>
-        <span class="stat-value" id="stat-confidence">--</span>
-      </div>
-      <div class="stat">
-        <span class="stat-label">As of</span>
-        <span class="stat-value" id="stat-date">--</span>
+
+      <div class="hero-stats" id="hero-stats">
+        <div class="stat">
+          <div class="stat-top">
+            <span class="stat-label">Humidity</span>
+            <svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
+          </div>
+          <span class="stat-value" id="stat-humidity">--</span>
+        </div>
+        <div class="stat">
+          <div class="stat-top">
+            <span class="stat-label">Pressure</span>
+            <svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4"/><path d="M12 16V8"/></svg>
+          </div>
+          <span class="stat-value" id="stat-pressure">--</span>
+        </div>
+        <div class="stat">
+          <div class="stat-top">
+            <span class="stat-label">Confidence</span>
+            <svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+          </div>
+          <span class="stat-value" id="stat-confidence">--</span>
+        </div>
+        <div class="stat">
+          <div class="stat-top">
+            <span class="stat-label">As of Date</span>
+            <svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+          </div>
+          <span class="stat-value" id="stat-date">--</span>
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- Grid Main: Chart & Dynamic Weights -->
   <section class="grid-main">
     <div class="panel panel-chart">
       <div class="panel-head">
-        <h2>Forecast versus observed</h2>
-        <p>Last 30 days, blended against each individual source</p>
+        <div>
+          <h2>Forecast versus observed</h2>
+          <p>Last 30 days, blended against each individual source</p>
+        </div>
+        <div class="panel-badge">30-Day Trend</div>
       </div>
-      <canvas id="timeseries-chart" height="260"></canvas>
+      <div class="chart-wrapper">
+        <canvas id="timeseries-chart"></canvas>
+      </div>
     </div>
 
     <div class="panel panel-weights">
       <div class="panel-head">
-        <h2>Dynamic weights</h2>
-        <p>Current blend for this region, season, and regime</p>
+        <div>
+          <h2>Dynamic weights</h2>
+          <p>Current blend for this region, season, and regime</p>
+        </div>
+        <div class="panel-badge">Optimal Ensemble</div>
       </div>
       <div class="weight-bars" id="weight-bars"></div>
     </div>
   </section>
 
+  <!-- Model Comparison Table -->
   <section class="panel panel-table">
     <div class="panel-head">
-      <h2>Model comparison</h2>
-      <p>Held-out accuracy for the selected region and variable</p>
+      <div>
+        <h2>Model comparison</h2>
+        <p>Held-out accuracy for the selected region and variable</p>
+      </div>
+      <div class="panel-badge">Validation Benchmark</div>
     </div>
-    <table id="comparison-table">
-      <thead>
-        <tr>
-          <th>Model</th>
-          <th>MAE</th>
-          <th>RMSE</th>
-          <th>R²</th>
-          <th>Bias</th>
-        </tr>
-      </thead>
-      <tbody id="comparison-body"></tbody>
-    </table>
+    <div class="table-container">
+      <table id="comparison-table">
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>MAE</th>
+            <th>RMSE</th>
+            <th>R² Score</th>
+            <th>Bias</th>
+          </tr>
+        </thead>
+        <tbody id="comparison-body"></tbody>
+      </table>
+    </div>
   </section>
 
+  <!-- Grid Secondary: Regional Map Weights & Extreme Weather Watch -->
   <section class="grid-secondary">
     <div class="panel panel-map">
       <div class="panel-head">
-        <h2>Model weight by region</h2>
-        <p>Which source earns the most trust where</p>
+        <div>
+          <h2>Model weight by region</h2>
+          <p>Which source earns the most trust across India</p>
+        </div>
+        <div class="panel-badge">Regional Trust</div>
       </div>
       <div class="region-weight-grid" id="region-weight-grid"></div>
     </div>
 
     <div class="panel panel-extreme">
       <div class="panel-head">
-        <h2>Extreme weather watch</h2>
-        <p>Last 14 days of observed conditions</p>
+        <div>
+          <h2>Extreme weather watch</h2>
+          <p>Last 14 days of observed weather regimes</p>
+        </div>
+        <div class="panel-badge">Early Warning</div>
       </div>
       <div id="extreme-alert" class="extreme-alert"></div>
+      <div class="regime-tally-header">Observed Regimes Distribution:</div>
       <div class="regime-tally" id="regime-tally"></div>
     </div>
   </section>
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<footer class="footer">
+  <div class="footer-content">
+    <span>BlitzCast Weather Intelligence · Dynamic Machine Learning Ensemble</span>
+    <span class="footer-dot">•</span>
+    <span>Real-time NWP & AI Forecast Harmonization</span>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/index-script.js') }}"></script>
 </body>
 </html>
