@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlitzCast</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index-style.css') }}">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark"></span>
+    <span class="brand-name">BlitzCast</span>
+  </div>
+  <div class="controls">
+    <label class="control">
+      <span>Region</span>
+      <select id="region-select">
+        {% for region in regions %}
+        <option value="{{ region }}">{{ region }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <div class="target-tabs" id="target-tabs">
+      {% for target in targets %}
+      <button class="target-tab {% if loop.first %}active{% endif %}" data-target="{{ target }}">
+        {{ {"temp": "Temperature", "rain": "Rainfall", "wind": "Wind"}[target] }}
+      </button>
+      {% endfor %}
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-reading">
+      <span class="hero-label" id="hero-region">Pune</span>
+      <span class="hero-value" id="hero-value">--</span>
+      <span class="hero-unit" id="hero-unit"></span>
+      <span class="hero-regime" id="hero-regime">Loading conditions</span>
+    </div>
+    <div class="hero-stats" id="hero-stats">
+      <div class="stat">
+        <span class="stat-label">Humidity</span>
+        <span class="stat-value" id="stat-humidity">--</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Pressure</span>
+        <span class="stat-value" id="stat-pressure">--</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Confidence</span>
+        <span class="stat-value" id="stat-confidence">--</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">As of</span>
+        <span class="stat-value" id="stat-date">--</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid-main">
+    <div class="panel panel-chart">
+      <div class="panel-head">
+        <h2>Forecast versus observed</h2>
+        <p>Last 30 days, blended against each individual source</p>
+      </div>
+      <canvas id="timeseries-chart" height="260"></canvas>
+    </div>
+
+    <div class="panel panel-weights">
+      <div class="panel-head">
+        <h2>Dynamic weights</h2>
+        <p>Current blend for this region, season, and regime</p>
+      </div>
+      <div class="weight-bars" id="weight-bars"></div>
+    </div>
+  </section>
+
+  <section class="panel panel-table">
+    <div class="panel-head">
+      <h2>Model comparison</h2>
+      <p>Held-out accuracy for the selected region and variable</p>
+    </div>
+    <table id="comparison-table">
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>MAE</th>
+          <th>RMSE</th>
+          <th>R²</th>
+          <th>Bias</th>
+        </tr>
+      </thead>
+      <tbody id="comparison-body"></tbody>
+    </table>
+  </section>
+
+  <section class="grid-secondary">
+    <div class="panel panel-map">
+      <div class="panel-head">
+        <h2>Model weight by region</h2>
+        <p>Which source earns the most trust where</p>
+      </div>
+      <div class="region-weight-grid" id="region-weight-grid"></div>
+    </div>
+
+    <div class="panel panel-extreme">
+      <div class="panel-head">
+        <h2>Extreme weather watch</h2>
+        <p>Last 14 days of observed conditions</p>
+      </div>
+      <div id="extreme-alert" class="extreme-alert"></div>
+      <div class="regime-tally" id="regime-tally"></div>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/index-script.js') }}"></script>
+</body>
+</html>
