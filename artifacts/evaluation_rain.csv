@@ -1,0 +1,6 @@
+model,MAE,RMSE,R2,Bias
+NWP,4.219,7.388,0.822,-0.232
+AI Model,4.209,7.495,0.816,-0.362
+Ensemble,5.71,11.489,0.569,-2.866
+BlitzCast (weighted blend),3.95,7.121,0.834,-0.697
+BlitzCast (AI meta-model),3.154,6.229,0.873,-0.297

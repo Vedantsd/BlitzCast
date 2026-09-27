@@ -1,0 +1,16 @@
+[
+  "month",
+  "forecast_lead_time_hours",
+  "humidity",
+  "pressure",
+  "nwp_temp",
+  "nwp_temp_hist_mae",
+  "ai_temp",
+  "ai_temp_hist_mae",
+  "ensemble_temp",
+  "ensemble_temp_hist_mae",
+  "region",
+  "season",
+  "weather_regime",
+  "lead_time_bucket"
+]

@@ -1,0 +1,23 @@
+{
+  "region": [
+    "Bengaluru",
+    "Chennai",
+    "Delhi",
+    "Mumbai",
+    "Pune"
+  ],
+  "season": [
+    "Monsoon",
+    "Summer",
+    "Winter"
+  ],
+  "weather_regime": [
+    "Clear",
+    "Convective",
+    "Monsoon",
+    "Storm"
+  ],
+  "lead_time_bucket": [
+    "0-24h"
+  ]
+}

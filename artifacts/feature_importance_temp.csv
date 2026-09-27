@@ -1,0 +1,15 @@
+feature,importance
+nwp_temp,0.60361195
+ai_temp,0.2643584
+ensemble_temp,0.10646975
+ai_temp_hist_mae,0.0047970964
+humidity,0.00405943
+weather_regime,0.0033403826
+month,0.002614299
+region,0.0025915133
+pressure,0.0023000652
+ensemble_temp_hist_mae,0.002281138
+nwp_temp_hist_mae,0.002183688
+season,0.0013924879
+forecast_lead_time_hours,0.0
+lead_time_bucket,0.0
