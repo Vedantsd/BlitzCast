@@ -3,12 +3,11 @@ import json
 import numpy as np
 import pandas as pd
 import xgboost as xgb
+from sqlalchemy import text
+from db import get_engine
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_PATH = os.path.join(BASE_DIR, "datasets", "processed", "blitzcast_training_data.csv")
-OBS_PATH = os.path.join(BASE_DIR, "datasets", "observations", "era5_observations.csv")
 ARTIFACT_DIR = os.path.join(BASE_DIR, "artifacts")
-OUTPUT_PATH = os.path.join(ARTIFACT_DIR, "dashboard_data.json")
 
 SOURCES = ["nwp", "ai", "ensemble"]
 TARGETS = ["temp", "rain", "wind"]
@@ -28,14 +27,31 @@ def lead_bucket(hours):
     return "5-10d"
 
 
+from pandas.errors import DatabaseError
+
+
 def load_dataset():
-    df = pd.read_csv(DATA_PATH, parse_dates=["date"])
+    try:
+        df = pd.read_sql("SELECT * FROM processed_training_data", get_engine(), parse_dates=["date"])
+    except DatabaseError as exc:
+        raise RuntimeError(
+            "The 'processed_training_data' table doesn't exist yet. "
+            "Run `python generate_datasets.py` first to populate the database, "
+            "then re-run this script."
+        ) from exc
     df["lead_time_bucket"] = df["forecast_lead_time_hours"].apply(lead_bucket)
     return df
 
 
 def load_observations():
-    return pd.read_csv(OBS_PATH, parse_dates=["date"])
+    try:
+        return pd.read_sql("SELECT * FROM observations", get_engine(), parse_dates=["date"])
+    except DatabaseError as exc:
+        raise RuntimeError(
+            "The 'observations' table doesn't exist yet. "
+            "Run `python generate_datasets.py` first to populate the database, "
+            "then re-run this script."
+        ) from exc
 
 
 def load_target_artifacts(target):
@@ -249,12 +265,24 @@ def main():
             output["timeseries"][region][target] = build_timeseries(subset, target, art)
             output["comparison"][region][target] = build_comparison(subset, target, art)
 
-    os.makedirs(ARTIFACT_DIR, exist_ok=True)
-    with open(OUTPUT_PATH, "w") as f:
-        json.dump(output, f)
+    engine = get_engine()
+    payload = json.dumps(output)
+    with engine.begin() as conn:
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS dashboard_cache (
+                key TEXT PRIMARY KEY,
+                payload JSONB NOT NULL,
+                updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+            )
+        """))
+        conn.execute(text("""
+            INSERT INTO dashboard_cache (key, payload, updated_at)
+            VALUES (:key, CAST(:payload AS JSONB), now())
+            ON CONFLICT (key) DO UPDATE SET payload = EXCLUDED.payload, updated_at = EXCLUDED.updated_at
+        """), {"key": "dashboard", "payload": payload})
 
-    size_kb = os.path.getsize(OUTPUT_PATH) / 1024
-    print(f"Wrote {OUTPUT_PATH} ({size_kb:.1f} KB)")
+    size_kb = len(payload) / 1024
+    print(f"Updated dashboard_cache in Postgres ({size_kb:.1f} KB payload)")
 
 
 if __name__ == "__main__":
