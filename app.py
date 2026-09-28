@@ -31,6 +31,18 @@ def index():
     return render_template("index.html", regions=data["regions"], targets=data["targets"])
 
 
+# BlitzCast Forecast Page (Public-facing, fully static/mock data driven)
+@app.route("/forecast")
+def forecast():
+    return render_template("forecast.html")
+
+
+# BlitzCast User Subscription Dashboard (Static/mock data driven)
+@app.route("/subscription")
+def subscription():
+    return render_template("subscription.html")
+
+
 @app.route("/api/regions")
 def api_regions():
     return jsonify(get_data()["regions"])

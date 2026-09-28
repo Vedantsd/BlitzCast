@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlitzCast — AI-Powered Weather Forecast Blending</title>
+  <meta name="description" content="Intelligently blending NWP, AI/ML and ensemble forecasts to deliver adaptive, region-aware weather intelligence. Smart India Hackathon 2026.">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Base Design System & Extended Components -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index-style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/blitzcast-theme.css') }}">
+  
+  <script>
+    try {
+      const savedTheme = localStorage.getItem("blitzcast-theme");
+      if (savedTheme === "dark" || savedTheme === "light") {
+        document.documentElement.dataset.theme = savedTheme;
+      }
+    } catch (e) {}
+  </script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="/forecast" class="brand" style="text-decoration:none;">
+      <div class="brand-mark-wrap">
+        <img class="brand-mark" src="{{ url_for('static', filename='img/logo.png') }}" alt="BlitzCast Logo">
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">BlitzCast</span>
+        <span class="brand-tagline">AI Blend Intelligence</span>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="#problem" class="nav-link">The Problem</a>
+      <a href="#solution" class="nav-link">How It Thinks</a>
+      <a href="#pipeline" class="nav-link">Pipeline</a>
+      <a href="#blending" class="nav-link">Dynamic Weights</a>
+      <a href="#regional-map" class="nav-link">Regional Skill</a>
+      <a href="#comparison" class="nav-link">Comparison</a>
+      <a href="/subscription" class="nav-link nav-cta">
+        <span>Forecast Subscription</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+    </nav>
+
+    <div class="controls">
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme" title="Switch theme">
+        <svg class="theme-icon theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2"></path>
+          <path d="M12 20v2"></path>
+          <path d="m4.93 4.93 1.41 1.41"></path>
+          <path d="m17.66 17.66 1.41 1.41"></path>
+          <path d="M2 12h2"></path>
+          <path d="M20 12h2"></path>
+          <path d="m6.34 17.66-1.41 1.41"></path>
+          <path d="m19.07 4.93-1.41 1.41"></path>
+        </svg>
+        <svg class="theme-icon theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Hero Section -->
+  <section class="landing-hero" id="hero">
+    <div class="landing-hero-backdrop" aria-hidden="true"></div>
+    <div class="landing-hero-grid">
+      <div class="hero-left-content">
+       
+        <h1 class="hero-headline">BlitzCast</h1>
+        <div class="hero-subhead">AI-Powered Weather Forecast Blending</div>
+        <p class="hero-description">
+          Intelligently blending NWP, AI/ML and ensemble forecasts to deliver adaptive, region-aware weather intelligence across India.
+        </p>
+
+        <div class="hero-actions">
+          <a href="/subscription" class="btn btn-primary btn-lg">
+            <span>Explore Forecast</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+          
+        </div>
+
+        <div class="hero-metric-chips">
+          <div class="metric-chip">
+            <div class="metric-chip-label">Forecast Sources</div>
+            <div class="metric-chip-value">5+ Sources</div>
+          </div>
+          <div class="metric-chip">
+            <div class="metric-chip-label">Forecast Horizon</div>
+            <div class="metric-chip-value">10 Days</div>
+          </div>
+          <div class="metric-chip">
+            <div class="metric-chip-label">Key Variables</div>
+            <div class="metric-chip-value">Rain • Temp • Wind</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Visual Preview Widget -->
+      <div class="hero-visual-card">
+        <div class="card-lead-banner">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="regime-status-dot" style="background:#10b981;box-shadow:0 0 8px #10b981;"></span>
+            <strong style="font-size:14px;color:var(--ink);">Real-Time Blending Engine</strong>
+          </div>
+          <span class="card-lead-badge">Demo Mode</span>
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+            <span style="font-size:12px;font-weight:700;color:var(--ink-muted);text-transform:uppercase;">Dominant Model: ECMWF AIFS</span>
+            <span style="font-family:'Space Grotesk';font-size:14px;font-weight:700;color:var(--yellow-deep);">31% Weight</span>
+          </div>
+          <div class="weight-track" style="height:8px;">
+            <div class="weight-fill source-ai" style="width: 31%;"></div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;margin-bottom:16px;">
+          <div style="padding:10px;border-radius:10px;background:var(--surface-soft);border:1px solid var(--hairline);">
+            <div style="font-size:10px;font-weight:700;color:var(--ink-muted);">IFS (NWP)</div>
+            <div style="font-family:'Space Grotesk';font-size:16px;font-weight:700;color:#2563eb;">24%</div>
+          </div>
+          <div style="padding:10px;border-radius:10px;background:var(--surface-soft);border:1px solid var(--hairline);">
+            <div style="font-size:10px;font-weight:700;color:var(--ink-muted);">Custom AI</div>
+            <div style="font-family:'Space Grotesk';font-size:16px;font-weight:700;color:#8b5cf6;">22%</div>
+          </div>
+          <div style="padding:10px;border-radius:10px;background:var(--surface-soft);border:1px solid var(--hairline);">
+            <div style="font-size:10px;font-weight:700;color:var(--ink-muted);">Ensemble EPS</div>
+            <div style="font-family:'Space Grotesk';font-size:16px;font-weight:700;color:#10b981;">23%</div>
+          </div>
+        </div>
+
+        <div style="padding:12px;border-radius:12px;background:var(--badge-bg);border:1px solid var(--badge-border);display:flex;align-items:center;gap:10px;">
+          <span style="font-size:18px;">⚡</span>
+          <span style="font-size:12px;font-weight:600;color:var(--badge-text);">
+            Dynamic weights continuously adapt to geographical terrain, synoptic season, and forecast lead time.
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Problem Section -->
+  <section class="section" id="problem">
+    <div class="section-header">
+      <div class="section-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>Forecasting Challenge</span>
+      </div>
+      <h2 class="section-title">Why Weather Forecasting Needs Smarter Blending</h2>
+      <p class="section-subtitle">
+        No single forecasting model performs best everywhere. Each model paradigm has distinct physical or statistical strengths and critical blind spots.
+      </p>
+    </div>
+
+    <div class="problem-grid">
+      <div class="source-card">
+        <div class="source-card-top">
+          <div class="source-icon-wrap" style="color:#2563eb;">📐</div>
+          <div>
+            <h3>NWP Models</h3>
+            <span style="font-size:11px;color:var(--ink-muted);">ECMWF IFS, GFS, WRF</span>
+          </div>
+        </div>
+        <p>Ground-truth fluid dynamics and thermodynamic equations. Outstanding for short-range synoptic boundary physics.</p>
+        <div class="source-limitation">
+          <strong>Limitation:</strong> High computational latency; struggles with localized sub-grid tropical convection.
+        </div>
+      </div>
+
+      <div class="source-card">
+        <div class="source-card-top">
+          <div class="source-icon-wrap" style="color:#7c3aed;">🧠</div>
+          <div>
+            <h3>AI/ML Weather Models</h3>
+            <span style="font-size:11px;color:var(--ink-muted);">ECMWF AIFS, GraphCast</span>
+          </div>
+        </div>
+        <p>Lightning-fast global inference trained on ERA5 reanalysis. Excels at recognizing large-scale flow patterns at medium range.</p>
+        <div class="source-limitation">
+          <strong>Limitation:</strong> Can smooth out extreme tail peaks; lacks explicit physics constraints during rare regime shifts.
+        </div>
+      </div>
+
+      <div class="source-card">
+        <div class="source-card-top">
+          <div class="source-icon-wrap" style="color:#059669;">📊</div>
+          <div>
+            <h3>Ensemble Forecasts</h3>
+            <span style="font-size:11px;color:var(--ink-muted);">50-Member Multi-Physics EPS</span>
+          </div>
+        </div>
+        <p>Quantifies atmospheric chaotic spread. Superior at generating reliable probabilistic distributions beyond Day 5.</p>
+        <div class="source-limitation">
+          <strong>Limitation:</strong> Ensemble averaging dampens high-intensity localized precipitation gradients.
+        </div>
+      </div>
+
+      <div class="source-card">
+        <div class="source-card-top">
+          <div class="source-icon-wrap" style="color:#d97706;">🛰️</div>
+          <div>
+            <h3>Historical Observations</h3>
+            <span style="font-size:11px;color:var(--ink-muted);">IMD Radars & Rain Gauges</span>
+          </div>
+        </div>
+        <p>Essential ground truth validation verifying past forecast skill to recalibrate continuous learning weights.</p>
+        <div class="source-limitation">
+          <strong>Limitation:</strong> Ground networks have spatial density gaps across rugged mountain and maritime regions.
+        </div>
+      </div>
+    </div>
+
+    <!-- The 4 Variation Factors -->
+    <div class="variation-strip">
+      <div class="variation-strip-head">Model Skill Varies Dynamically Across Four Primary Dimensions:</div>
+      <div class="variation-factors">
+        <div class="factor-item">
+          <span class="factor-icon">🗺️</span>
+          <div>
+            <strong>Region</strong>
+            <div style="font-size:11px;color:var(--ink-muted);">Coastal vs Ghats vs Plains</div>
+          </div>
+        </div>
+        <div class="factor-item">
+          <span class="factor-icon">☀️</span>
+          <div>
+            <strong>Season</strong>
+            <div style="font-size:11px;color:var(--ink-muted);">Monsoon vs Pre-monsoon Heat</div>
+          </div>
+        </div>
+        <div class="factor-item">
+          <span class="factor-icon">⏳</span>
+          <div>
+            <strong>Lead Time</strong>
+            <div style="font-size:11px;color:var(--ink-muted);">Day 1–3 vs Day 4–7 vs Day 8–10</div>
+          </div>
+        </div>
+        <div class="factor-item">
+          <span class="factor-icon">🌀</span>
+          <div>
+            <strong>Weather Regime</strong>
+            <div style="font-size:11px;color:var(--ink-muted);">Convective, Cyclone, Heatwave</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Solution Section: How BlitzCast Thinks -->
+  <section class="section" id="solution">
+    <div class="section-header">
+      <div class="section-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4"/><path d="M12 18v4"/><path d="m4.93 4.93 2.83 2.83"/><path d="m16.24 16.24 2.83 2.83"/><path d="M2 12h4"/><path d="M18 12h4"/><path d="m4.93 19.07 2.83-2.83"/><path d="m16.24 7.76 2.83-2.83"/></svg>
+        <span>Adaptive Architecture</span>
+      </div>
+      <h2 class="section-title">How BlitzCast Thinks</h2>
+      <p class="section-subtitle">
+        The core operational loop of BlitzCast continuously harmonizes disparate forecast signals into one resilient, calibrated intelligence feed.
+      </p>
+    </div>
+
+    <div class="four-stage-flow">
+      <div class="stage-card">
+        <div class="stage-header">
+          <div class="stage-icon">📡</div>
+          <span class="stage-number">STAGE 01</span>
+        </div>
+        <div class="stage-title">WEATHER DATA</div>
+        <p class="stage-desc">
+          Collect real-time forecasts, atmospheric state observations, ground radar, and historical weather data across India.
+        </p>
+        <div class="stage-footer">✓ Multi-source ingestion (GRIB2 & NetCDF)</div>
+      </div>
+
+      <div class="stage-card">
+        <div class="stage-header">
+          <div class="stage-icon">🧬</div>
+          <span class="stage-number">STAGE 02</span>
+        </div>
+        <div class="stage-title">BLEND</div>
+        <p class="stage-desc">
+          Combine physics-based NWP, AI/ML deep models, and multi-member ensemble predictions using skill-weighted loss functions.
+        </p>
+        <div class="stage-footer">✓ Dynamic ensemble harmonization</div>
+      </div>
+
+      <div class="stage-card">
+        <div class="stage-header">
+          <div class="stage-icon">⚡</div>
+          <span class="stage-number">STAGE 03</span>
+        </div>
+        <div class="stage-title">OPTIMIZE</div>
+        <p class="stage-desc">
+          Generate an optimized, calibrated 10-day blended forecast for rain, temperature, wind, and severe weather indicators.
+        </p>
+        <div class="stage-footer">✓ Calibrated confidence metrics</div>
+      </div>
+
+      <div class="stage-card">
+        <div class="stage-header">
+          <div class="stage-icon">🎯</div>
+          <span class="stage-number">STAGE 04</span>
+        </div>
+        <div class="stage-title">DISPLAY</div>
+        <p class="stage-desc">
+          Adjust model weights dynamically according to region, season, forecast lead time, and the active synoptic weather regime.
+        </p>
+        <div class="stage-footer">✓ Continuous feedback learning</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Workflow Pipeline Section -->
+  <section class="section" id="pipeline">
+    <div class="section-header">
+      <div class="section-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <span>End-to-End Pipeline</span>
+      </div>
+      <h2 class="section-title">The Operational Forecast Workflow</h2>
+      <p class="section-subtitle">
+        From raw global meteorological feeds to decision-grade confidence scoring and extreme weather guidance.
+      </p>
+    </div>
+
+    <div class="pipeline-container">
+      <div class="pipeline-track">
+        <div class="pipeline-node">
+          <div class="node-icon-circle">🌐</div>
+          <div class="node-title">Weather Data</div>
+          <div class="node-subtitle">Radar & ECMWF</div>
+        </div>
+        <div class="pipeline-arrow">➔</div>
+
+        <div class="pipeline-node">
+          <div class="node-icon-circle">⚙️</div>
+          <div class="node-title">Preprocessing</div>
+          <div class="node-subtitle">Interpolation & Bias</div>
+        </div>
+        <div class="pipeline-arrow">➔</div>
+
+        <div class="pipeline-node">
+          <div class="node-icon-circle">📑</div>
+          <div class="node-title">Multiple Sources</div>
+          <div class="node-subtitle">NWP, AI & Ensembles</div>
+        </div>
+        <div class="pipeline-arrow">➔</div>
+
+        <div class="pipeline-node">
+          <div class="node-icon-circle">📈</div>
+          <div class="node-title">Skill Analysis</div>
+          <div class="node-subtitle">Historical Verification</div>
+        </div>
+        <div class="pipeline-arrow">➔</div>
+
+        <div class="pipeline-node">
+          <div class="node-icon-circle">⚖️</div>
+          <div class="node-title">Dynamic Weighting</div>
+          <div class="node-subtitle">Regime & Lead Time</div>
+        </div>
+        <div class="pipeline-arrow">➔</div>
+
+        <div class="pipeline-node">
+          <div class="node-icon-circle">🔮</div>
+          <div class="node-title">Blended Forecast</div>
+          <div class="node-subtitle">Optimal Target Signals</div>
+        </div>
+        <div class="pipeline-arrow">➔</div>
+
+        <div class="pipeline-node" style="border-color:var(--yellow);background:var(--badge-bg);">
+          <div class="node-icon-circle" style="background:#fef3c7;color:#92400e;">🛡️</div>
+          <div class="node-title" style="color:var(--badge-text);">Confidence & Alerts</div>
+          <div class="node-subtitle">Extreme Guidance</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Forecast Variables Section -->
+  <section class="section" id="variables">
+    <div class="section-header">
+      <div class="section-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        <span>Variable Coverage</span>
+      </div>
+      <h2 class="section-title">One Platform. Multiple Weather Signals.</h2>
+      <p class="section-subtitle">
+        Synthesizing critical meteorological variables with unified probability distributions.
+      </p>
+    </div>
+
+    <div class="variable-cards-grid">
+      <div class="variable-card card-rain">
+        <div class="variable-icon-header">
+          <div class="variable-icon-pill">🌧️</div>
+          <span class="card-lead-badge" style="background:var(--rain-bg);color:var(--rain-accent);">Precipitation</span>
+        </div>
+        <div class="variable-name">Rainfall</div>
+        <p class="variable-desc">
+          Hourly rainfall accumulation, 24h totals, and precipitation probability with convective cloudburst warning flags.
+        </p>
+        <div class="variable-metrics-preview">
+          <span class="var-metric-tag">Precip (mm)</span>
+          <span class="var-metric-tag">Probability (%)</span>
+          <span class="var-metric-tag">Intensity Tier</span>
+        </div>
+      </div>
+
+      <div class="variable-card card-temp">
+        <div class="variable-icon-header">
+          <div class="variable-icon-pill">🌡️</div>
+          <span class="card-lead-badge" style="background:var(--temp-bg);color:var(--temp-accent);">Thermal</span>
+        </div>
+        <div class="variable-name">Temperature</div>
+        <p class="variable-desc">
+          Diurnal cycle tracking, peak daytime maximums, overnight lows, and heat index calculations with thermal risk bands.
+        </p>
+        <div class="variable-metrics-preview">
+          <span class="var-metric-tag">Max/Min (°C)</span>
+          <span class="var-metric-tag">Heat Index</span>
+          <span class="var-metric-tag">Anomaly Trend</span>
+        </div>
+      </div>
+
+      <div class="variable-card card-wind">
+        <div class="variable-icon-header">
+          <div class="variable-icon-pill">💨</div>
+          <span class="card-lead-badge" style="background:var(--wind-bg);color:var(--wind-accent);">Atmospheric Flow</span>
+        </div>
+        <div class="variable-name">Wind Conditions</div>
+        <p class="variable-desc">
+          Sustained surface velocities, gust likelihood, and directional vectors critical for maritime, aviation, and renewable energy.
+        </p>
+        <div class="variable-metrics-preview">
+          <span class="var-metric-tag">Speed (km/h)</span>
+          <span class="var-metric-tag">Gust Index</span>
+          <span class="var-metric-tag">Direction</span>
+        </div>
+      </div>
+
+      <div class="variable-card card-extreme">
+        <div class="variable-icon-header">
+          <div class="variable-icon-pill">⚡</div>
+          <span class="card-lead-badge" style="background:var(--alert-bg);color:var(--alert-accent);">Early Warning</span>
+        </div>
+        <div class="variable-name">Extreme Weather</div>
+        <p class="variable-desc">
+          Early hazard detection for heavy monsoon downpours, scorching heatwaves, and damaging high-wind squalls.
+        </p>
+        <div class="variable-metrics-preview">
+          <span class="var-metric-tag">Severe Rain</span>
+          <span class="var-metric-tag">Heat Wave</span>
+          <span class="var-metric-tag">High Wind</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Model Blending & Dynamic Weights Section -->
+  <section class="section" id="blending">
+    <div class="section-header">
+      <div class="section-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        <span>Ensemble Harmonization</span>
+      </div>
+      <h2 class="section-title">Dynamic Model Weights</h2>
+      <p class="section-subtitle">
+        BlitzCast fuses five premier forecast systems. Weights dynamically shift across lead time and weather regimes.
+      </p>
+    </div>
+
+    <div class="grid-main">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Lead-Time Adaptive Weight Simulator</h2>
+            <p>Explore how model dominance transitions from Day 1 physics to Day 10 ensemble probabilities</p>
+          </div>
+          <div class="panel-badge">Interactive Demo</div>
+        </div>
+
+        <div class="target-tabs" style="margin-bottom:20px;">
+          <button class="target-tab lead-tab-btn active" type="button">Day 1–2 (0–48h)</button>
+          <button class="target-tab lead-tab-btn" type="button">Day 3–5 (48–120h)</button>
+          <button class="target-tab lead-tab-btn" type="button">Day 6–7 (120–168h)</button>
+          <button class="target-tab lead-tab-btn" type="button">Day 8–10 (168–240h)</button>
+        </div>
+
+        <div class="weight-bars">
+          <div class="weight-row">
+            <div class="weight-row-head">
+              <div class="weight-row-source">
+                <span class="weight-source-dot" style="background:#2563eb;"></span>
+                <span>ECMWF IFS (Physical NWP)</span>
+              </div>
+              <span class="weight-row-pct" id="text-weight-ifs">34%</span>
+            </div>
+            <div class="weight-track"><div class="weight-fill source-nwp" id="bar-weight-ifs" style="width: 34%;"></div></div>
+          </div>
+
+          <div class="weight-row">
+            <div class="weight-row-head">
+              <div class="weight-row-source">
+                <span class="weight-source-dot" style="background:#7c3aed;"></span>
+                <span>ECMWF AIFS (AI Synoptic)</span>
+              </div>
+              <span class="weight-row-pct" id="text-weight-aifs">28%</span>
+            </div>
+            <div class="weight-track"><div class="weight-fill source-ai" id="bar-weight-aifs" style="width: 28%;"></div></div>
+          </div>
+
+          <div class="weight-row">
+            <div class="weight-row-head">
+              <div class="weight-row-source">
+                <span class="weight-source-dot" style="background:#8b5cf6;"></span>
+                <span>AI/ML Deep Model</span>
+              </div>
+              <span class="weight-row-pct" id="text-weight-ai">18%</span>
+            </div>
+            <div class="weight-track"><div class="weight-fill source-ai" id="bar-weight-ai" style="width: 18%;"></div></div>
+          </div>
+
+          <div class="weight-row">
+            <div class="weight-row-head">
+              <div class="weight-row-source">
+                <span class="weight-source-dot" style="background:#059669;"></span>
+                <span>Ensemble Forecast (EPS)</span>
+              </div>
+              <span class="weight-row-pct" id="text-weight-ens">20%</span>
+            </div>
+            <div class="weight-track"><div class="weight-fill source-ensemble" id="bar-weight-ens" style="width: 20%;"></div></div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;padding:14px;border-radius:12px;background:var(--surface-soft);border:1px solid var(--hairline);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--ink-muted);text-transform:uppercase;">Adaptive Rule</div>
+            <div style="font-size:13px;font-weight:600;color:var(--ink);" id="lead-rationale-text">
+              ECMWF IFS (Physics-bound boundary layer equations excel in short-range window)
+            </div>
+          </div>
+          <span class="card-lead-badge" id="lead-dominant-badge">Dominant: ECMWF IFS</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Integrated Model Sources</h2>
+            <p>Demonstration Weight Distribution</p>
+          </div>
+          <div class="panel-badge">SIH Demo Values</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="padding:12px;border-radius:12px;background:var(--surface-soft);border:1px solid var(--hairline);">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <strong style="font-size:13.5px;color:var(--ink);">ECMWF IFS</strong>
+              <span style="font-family:'Space Grotesk';font-weight:700;color:#2563eb;">24% Base</span>
+            </div>
+            <p style="font-size:12px;color:var(--ink-secondary);margin:0;">World-standard operational global numerical weather prediction.</p>
+          </div>
+
+          <div style="padding:12px;border-radius:12px;background:var(--surface-soft);border:1px solid var(--hairline);">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <strong style="font-size:13.5px;color:var(--ink);">ECMWF AIFS</strong>
+              <span style="font-family:'Space Grotesk';font-weight:700;color:#7c3aed;">31% Base</span>
+            </div>
+            <p style="font-size:12px;color:var(--ink-secondary);margin:0;">Data-driven graph neural network with extraordinary pattern efficiency.</p>
+          </div>
+
+          <div style="padding:12px;border-radius:12px;background:var(--surface-soft);border:1px solid var(--hairline);">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <strong style="font-size:13.5px;color:var(--ink);">AI/ML Deep Model</strong>
+              <span style="font-family:'Space Grotesk';font-weight:700;color:#8b5cf6;">22% Base</span>
+            </div>
+            <p style="font-size:12px;color:var(--ink-secondary);margin:0;">Custom neural network fine-tuned on Indian regional climate regimes.</p>
+          </div>
+
+          <div style="padding:12px;border-radius:12px;background:var(--surface-soft);border:1px solid var(--hairline);">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <strong style="font-size:13.5px;color:var(--ink);">Ensemble EPS</strong>
+              <span style="font-family:'Space Grotesk';font-weight:700;color:#059669;">23% Base</span>
+            </div>
+            <p style="font-size:12px;color:var(--ink-secondary);margin:0;">Perturbed initial condition ensemble capturing atmospheric spread.</p>
+          </div>
+        </div>
+
+        <p style="font-size:11px;color:var(--ink-muted);margin-top:16px;text-align:center;">
+          * Note: Percentages are static demonstration values illustrating the adaptive blending concept for SIH 2026.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Regional Model Weight Map Section -->
+  <section class="section" id="regional-map">
+    <div class="section-header">
+      <div class="section-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/></svg>
+        <span>Spatial Adaptivity</span>
+      </div>
+      <h2 class="section-title">Regional Model Intelligence</h2>
+      <p class="section-subtitle">
+        Which forecasting model earns the highest trust across different geographical zones of India?
+      </p>
+    </div>
+
+    <div class="map-layout-grid">
+      <div class="india-map-card">
+        <div class="panel-head" style="margin-bottom:0;padding-bottom:12px;">
+          <div>
+            <h2 style="font-size:16px;">Geographic Skill Map</h2>
+            <p style="font-size:12px;">Click a regional zone or card to inspect optimal model weights</p>
+          </div>
+          <div class="map-legend">
+            <div class="legend-item"><span class="legend-color" style="background:#2563eb;"></span> IFS</div>
+            <div class="legend-item"><span class="legend-color" style="background:#8b5cf6;"></span> AIFS</div>
+            <div class="legend-item"><span class="legend-color" style="background:#10b981;"></span> Ensemble</div>
+          </div>
+        </div>
+
+        <div class="svg-map-wrapper">
+          <svg viewBox="0 0 450 480" width="100%" height="100%" style="max-height:360px;">
+            <polygon class="map-region-shape" data-region="north" points="160,30 260,30 280,100 240,150 160,150 130,100" fill="rgba(139, 92, 246, 0.22)" stroke="#8b5cf6" stroke-width="2" style="cursor:pointer;transition:all 200ms;" />
+            <text x="180" y="90" font-family="Space Grotesk" font-size="12" font-weight="700" fill="var(--ink)" pointer-events="none">NORTH (AIFS 34%)</text>
+
+            <polygon class="map-region-shape" data-region="west" points="90,150 160,150 180,240 120,290 80,230 70,180" fill="rgba(139, 92, 246, 0.22)" stroke="#8b5cf6" stroke-width="2" style="cursor:pointer;transition:all 200ms;" />
+            <text x="95" y="220" font-family="Space Grotesk" font-size="12" font-weight="700" fill="var(--ink)" pointer-events="none">WEST (AIFS 31%)</text>
+
+            <polygon class="map-region-shape" data-region="central" points="160,150 250,150 260,250 180,250" fill="rgba(16, 185, 129, 0.22)" stroke="#10b981" stroke-width="2" style="cursor:pointer;transition:all 200ms;" />
+            <text x="175" y="200" font-family="Space Grotesk" font-size="12" font-weight="700" fill="var(--ink)" pointer-events="none">CENTRAL (Ens 34%)</text>
+
+            <polygon class="map-region-shape" data-region="east" points="250,150 380,130 400,210 320,250 260,240" fill="rgba(16, 185, 129, 0.22)" stroke="#10b981" stroke-width="2" style="cursor:pointer;transition:all 200ms;" />
+            <text x="280" y="190" font-family="Space Grotesk" font-size="12" font-weight="700" fill="var(--ink)" pointer-events="none">EAST (Ens 34%)</text>
+
+            <polygon class="map-region-shape" data-region="south" points="120,290 230,260 210,430 160,450 130,360" fill="rgba(37, 99, 235, 0.22)" stroke="#2563eb" stroke-width="2" style="cursor:pointer;transition:all 200ms;" />
+            <text x="145" y="360" font-family="Space Grotesk" font-size="12" font-weight="700" fill="var(--ink)" pointer-events="none">SOUTH (IFS 33%)</text>
+
+            <circle cx="140" cy="280" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5" />
+            <text x="148" y="284" font-family="Plus Jakarta Sans" font-size="10" font-weight="700" fill="var(--ink)">Pune</text>
+
+            <circle cx="120" cy="260" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5" />
+            <text x="75" y="264" font-family="Plus Jakarta Sans" font-size="10" font-weight="700" fill="var(--ink)">Mumbai</text>
+
+            <circle cx="185" cy="130" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5" />
+            <text x="192" y="134" font-family="Plus Jakarta Sans" font-size="10" font-weight="700" fill="var(--ink)">Delhi</text>
+
+            <circle cx="165" cy="390" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5" />
+            <text x="172" y="394" font-family="Plus Jakarta Sans" font-size="10" font-weight="700" fill="var(--ink)">Bengaluru</text>
+
+            <circle cx="195" cy="380" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5" />
+            <text x="202" y="384" font-family="Plus Jakarta Sans" font-size="10" font-weight="700" fill="var(--ink)">Chennai</text>
+
+            <circle cx="310" cy="230" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5" />
+            <text x="318" y="234" font-family="Plus Jakarta Sans" font-size="10" font-weight="700" fill="var(--ink)">Kolkata</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 id="map-region-name">North India</h2>
+            <p id="map-region-skill">Western Disturbances & Cold Advection</p>
+          </div>
+          <span class="card-lead-badge" id="map-dominant-name" style="background:#8b5cf6;color:#ffffff;border:none;">ECMWF AIFS</span>
+        </div>
+
+        <div style="font-size:13.5px;color:var(--ink-secondary);line-height:1.5;margin-bottom:18px;" id="map-region-rationale">
+          AI synoptic models resolve mid-latitude trough propagation over the Himalayas with reduced orographic bias.
+        </div>
+
+        <div style="font-size:11px;font-weight:700;color:var(--ink-muted);text-transform:uppercase;margin-bottom:10px;">
+          Active Regional Weight Split:
+        </div>
+
+        <div class="weight-bars" style="gap:10px;margin-bottom:20px;">
+          <div class="mini-bar-row" style="padding:6px 8px;background:var(--surface-soft);">
+            <span class="mini-bar-label" style="width:40px;">IFS</span>
+            <div class="mini-track"><div class="mini-fill" style="width:28%;background:#2563eb;"></div></div>
+            <span class="mini-pct" id="map-weight-ifs">28%</span>
+          </div>
+          <div class="mini-bar-row" style="padding:6px 8px;background:var(--surface-soft);">
+            <span class="mini-bar-label" style="width:40px;">AIFS</span>
+            <div class="mini-track"><div class="mini-fill" style="width:34%;background:#7c3aed;"></div></div>
+            <span class="mini-pct" id="map-weight-aifs">34%</span>
+          </div>
+          <div class="mini-bar-row" style="padding:6px 8px;background:var(--surface-soft);">
+            <span class="mini-bar-label" style="width:40px;">AI</span>
+            <div class="mini-track"><div class="mini-fill" style="width:20%;background:#8b5cf6;"></div></div>
+            <span class="mini-pct" id="map-weight-ai">20%</span>
+          </div>
+          <div class="mini-bar-row" style="padding:6px 8px;background:var(--surface-soft);">
+            <span class="mini-bar-label" style="width:40px;">Ens</span>
+            <div class="mini-track"><div class="mini-fill" style="width:18%;background:#059669;"></div></div>
+            <span class="mini-pct" id="map-weight-ens">18%</span>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:8px;">
+          <button class="region-zone-btn selected" data-region="north" type="button">
+            <strong>North India</strong>
+            <span style="font-size:11px;color:#8b5cf6;">AIFS</span>
+          </button>
+          <button class="region-zone-btn" data-region="west" type="button">
+            <strong>West India</strong>
+            <span style="font-size:11px;color:#8b5cf6;">AIFS</span>
+          </button>
+          <button class="region-zone-btn" data-region="central" type="button">
+            <strong>Central India</strong>
+            <span style="font-size:11px;color:#10b981;">Ensemble</span>
+          </button>
+          <button class="region-zone-btn" data-region="east" type="button">
+            <strong>East India</strong>
+            <span style="font-size:11px;color:#10b981;">Ensemble</span>
+          </button>
+          <button class="region-zone-btn" data-region="south" type="button" style="grid-column:span 2;">
+            <strong>South India & Peninsula</strong>
+            <span style="font-size:11px;color:#2563eb;">IFS</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10-Day Forecast Preview Section -->
+  <section class="section" id="forecast-preview">
+    <div class="section-header">
+      <div class="section-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+        <span>10-Day Lookahead</span>
+      </div>
+      <h2 class="section-title">Harmonized 10-Day Forecast Preview</h2>
+      <p class="section-subtitle">
+        Interactive demonstration for Pune, Maharashtra showing multi-variable output.
+      </p>
+    </div>
+
+    <div class="forecast-strip" id="landing-forecast-strip"></div>
+
+    <div class="panel" style="margin-top:14px;">
+      <div class="panel-head">
+        <div>
+          <h2>10-Day Blended Trajectory & Precipitation</h2>
+          <p>Daily maximum temperature blended with expected rainfall distribution</p>
+        </div>
+        <div class="panel-badge">Illustrative Forecast</div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="landing-timeseries-chart"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- Extreme Weather Guidance Section -->
+  <section class="section" id="extreme-guidance">
+    <div class="section-header">
+      <div class="section-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></svg>
+        <span>Hazard Early Warning</span>
+      </div>
+      <h2 class="section-title">Extreme Weather Guidance</h2>
+      <p class="section-subtitle">
+        Proactive risk alerts derived from blended divergence and ensemble spread across heavy precipitation, heat spikes, and gale winds.
+      </p>
+    </div>
+
+    <div class="extreme-grid" id="landing-extreme-alerts"></div>
+  </section>
+
+  <!-- Model Comparison Benchmark Section -->
+  <section class="section" id="comparison">
+    <div class="section-header">
+      <div class="section-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>
+        <span>Evaluation Framework</span>
+      </div>
+      <h2 class="section-title">Model Skill Comparison</h2>
+      <p class="section-subtitle">
+        Illustrative evaluation against single-model baselines over held-out verification periods.
+      </p>
+    </div>
+
+    <div class="panel panel-table">
+      <div class="panel-head">
+        <div>
+          <h2>Illustrative Evaluation Metrics</h2>
+          <p>Comparing Mean Absolute Error (MAE), Root Mean Square Error (RMSE), Bias, and R² Score</p>
+        </div>
+        <div class="panel-badge">Demo Evaluation</div>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Model Pipeline</th>
+              <th>MAE</th>
+              <th>RMSE</th>
+              <th>R² Score</th>
+              <th>Bias</th>
+            </tr>
+          </thead>
+          <tbody id="landing-comparison-body"></tbody>
+        </table>
+      </div>
+      <div style="font-size:11px;color:var(--ink-muted);margin-top:12px;">
+        * Note: Values shown are prototype demonstration benchmarks structured for SIH 2026 evaluation.
+      </div>
+    </div>
+  </section>
+
+  <!-- Real-World Use Cases Section -->
+  <section class="section" id="use-cases">
+    <div class="section-header">
+      <div class="section-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M16 12l-4-4-4 4"/><path d="M12 16V8"/></svg>
+        <span>Mission Impact</span>
+      </div>
+      <h2 class="section-title">Built for Mission-Critical Operations</h2>
+      <p class="section-subtitle">
+        How dynamic weather forecast blending empowers high-stakes sectors across India.
+      </p>
+    </div>
+
+    <div class="problem-grid">
+      <div class="source-card">
+        <div class="source-icon-wrap" style="color:#059669;">🌾</div>
+        <h3>Agriculture & Farming</h3>
+        <p>Adaptive 10-day rainfall confidence guides sowing windows, crop protection, and irrigation scheduling without false-alarm panics.</p>
+      </div>
+
+      <div class="source-card">
+        <div class="source-icon-wrap" style="color:#2563eb;">🚢</div>
+        <h3>Logistics & Freight</h3>
+        <p>Route optimization across coastal shipping lanes and national highway corridors with localized high-wind squall indicators.</p>
+      </div>
+
+      <div class="source-card">
+        <div class="source-icon-wrap" style="color:#dc2626;">🚨</div>
+        <h3>Disaster Management</h3>
+        <p>Early 48-hour flood convergence guidance and heatwave alerts give municipal response teams crucial pre-deployment lead time.</p>
+      </div>
+
+      <div class="source-card">
+        <div class="source-icon-wrap" style="color:#7c3aed;">📑</div>
+        <h3>Parametric Insurance</h3>
+        <p>Unbiased, blended weather metrics provide transparent, verified ground triggers for fast, objective crop loss claim settlement.</p>
+      </div>
+
+      <div class="source-card">
+        <div class="source-icon-wrap" style="color:#d97706;">🏛️</div>
+        <h3>Public Utilities</h3>
+        <p>Grid power load forecasting aligned with temperature surges, and urban stormwater reservoir planning based on blended rainfall.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technology Stack Section -->
+  <section class="section" id="technology">
+    <div class="section-header">
+      <div class="section-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <span>Architecture & Stack</span>
+      </div>
+      <h2 class="section-title">Built With Scientific Computing Tools</h2>
+      <p class="section-subtitle">
+        BlitzCast's production pipeline combines high-performance geoscientific libraries with real-time web visualization.
+      </p>
+    </div>
+
+    <div class="tech-stack-grid">
+      <div class="tech-badge"><span class="tech-icon">🐍</span><span class="tech-name">Python 3.11</span></div>
+      <div class="tech-badge"><span class="tech-icon">⚛️</span><span class="tech-name">React / JS</span></div>
+      <div class="tech-badge"><span class="tech-icon">🌶️</span><span class="tech-name">Flask REST API</span></div>
+      <div class="tech-badge"><span class="tech-icon">🌲</span><span class="tech-name">XGBoost ML</span></div>
+      <div class="tech-badge"><span class="tech-icon">🌐</span><span class="tech-name">Xarray Grids</span></div>
+      <div class="tech-badge"><span class="tech-icon">🐼</span><span class="tech-name">Pandas Data</span></div>
+      <div class="tech-badge"><span class="tech-icon">📊</span><span class="tech-name">Plotly & Charts</span></div>
+      <div class="tech-badge"><span class="tech-icon">🗺️</span><span class="tech-name">Folium GIS</span></div>
+      <div class="tech-badge"><span class="tech-icon">🐘</span><span class="tech-name">PostgreSQL</span></div>
+      <div class="tech-badge"><span class="tech-icon">🇪🇺</span><span class="tech-name">ECMWF IFS/AIFS</span></div>
+      <div class="tech-badge"><span class="tech-icon">📡</span><span class="tech-name">ERA5 Reanalysis</span></div>
+    </div>
+  </section>
+
+  <!-- Final CTA Section -->
+  <section class="landing-hero" style="margin-top:20px;text-align:center;">
+    <div class="landing-hero-backdrop" aria-hidden="true"></div>
+    <div style="position:relative;z-index:2;max-width:760px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:16px;">
+      <h2 class="hero-headline" style="font-size:clamp(32px, 3.8vw, 50px);margin-bottom:4px;">
+        Get Weather Intelligence Before You Need It.
+      </h2>
+      <p class="hero-description" style="margin-bottom:18px;">
+        Experience adaptive 10-day forecasts, regional model skill maps, and extreme weather early warnings on the BlitzCast User Dashboard.
+      </p>
+      <div style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;">
+        <a href="/subscription" class="btn btn-primary btn-lg">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span>Subscribe for Forecast Updates</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-content">
+    <span>BlitzCast Weather Intelligence · Dynamic Machine Learning Ensemble</span>
+    <span class="footer-dot">•</span>
+    <span>Real-time NWP & AI Forecast Harmonization</span>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/blitzcast-data.js') }}"></script>
+<script src="{{ url_for('static', filename='js/forecast.js') }}"></script>
+</body>
+</html>

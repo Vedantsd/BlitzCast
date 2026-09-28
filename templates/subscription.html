@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlitzCast — AI Blend Intelligence </title>
+  <meta name="description" content="Personalized 10-day blended weather intelligence, regional model weights, and extreme weather early guidance. Smart India Hackathon 2026.">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index-style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/blitzcast-theme.css') }}">
+  
+  <script>
+    try {
+      const savedTheme = localStorage.getItem("blitzcast-theme");
+      if (savedTheme === "dark" || savedTheme === "light") {
+        document.documentElement.dataset.theme = savedTheme;
+      }
+    } catch (e) {}
+  </script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div style="display:flex;align-items:center;gap:18px;">
+      <a href="/forecast" class="brand" style="text-decoration:none;" title="Back to BlitzCast Home">
+        <div class="brand-mark-wrap">
+          <img class="brand-mark" src="{{ url_for('static', filename='img/logo.png') }}" alt="BlitzCast logo">
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">BlitzCast</span>
+          <span class="brand-tagline">AI Blend Intelligence</span>
+        </div>
+      </a>
+      
+      <nav class="nav-links" style="margin-left:10px;">
+        <a href="#overview" class="nav-link active">Overview</a>
+        <a href="#forecast-10day" class="nav-link">10-Day Forecast</a>
+        <a href="#model-intelligence" class="nav-link">Model Intelligence</a>
+        <a href="#alerts-section" class="nav-link">Alerts</a>
+        <a href="/forecast" class="nav-link" style="color:var(--yellow-deep);">
+          <span>← User Forecast</span>
+        </a>
+      </nav>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label class="control-select-label" for="location-select">
+          <svg class="control-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span class="sr-only">Location</span>
+        </label>
+        <div class="select-wrapper">
+          <select id="location-select" aria-label="Select Forecast City">
+            <option value="pune" selected>Pune, Maharashtra</option>
+            <option value="mumbai">Mumbai, Maharashtra</option>
+            <option value="delhi">Delhi, NCR</option>
+            <option value="bengaluru">Bengaluru, Karnataka</option>
+            <option value="chennai">Chennai, Tamil Nadu</option>
+            <option value="kolkata">Kolkata, West Bengal</option>
+          </select>
+          <svg class="select-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="target-tabs" id="target-tabs" role="tablist" aria-label="Forecast variable selector">
+        <button class="target-tab active" data-target="temp" role="tab" aria-selected="true">
+          <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg>
+          <span>Temperature</span>
+        </button>
+        <button class="target-tab" data-target="rain" role="tab" aria-selected="false">
+          <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m9.2 22 3-7"/><path d="m9 13-3 7"/><path d="m17 13-3 7"/></svg>
+          <span>Rainfall</span>
+        </button>
+        <button class="target-tab" data-target="wind" role="tab" aria-selected="false">
+          <svg class="tab-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>
+          <span>Wind</span>
+        </button>
+      </div>
+
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme" title="Switch theme">
+        <svg class="theme-icon theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2"></path>
+          <path d="M12 20v2"></path>
+          <path d="m4.93 4.93 1.41 1.41"></path>
+          <path d="m17.66 17.66 1.41 1.41"></path>
+          <path d="M2 12h2"></path>
+          <path d="M20 12h2"></path>
+          <path d="m6.34 17.66-1.41 1.41"></path>
+          <path d="m19.07 4.93-1.41 1.41"></path>
+        </svg>
+        <svg class="theme-icon theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- User Subscription Banner Section (At Top) -->
+  <section id="subscription-container"></section>
+
+  <!-- Current Weather Hero Card -->
+  <section class="hero" id="overview">
+    <div class="hero-backdrop" aria-hidden="true"></div>
+    <div class="hero-content">
+      <div class="hero-reading">
+        <div class="hero-location-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span class="hero-label" id="hero-region">Pune, Maharashtra</span>
+        </div>
+        <div class="hero-digits">
+          <span class="hero-value" id="hero-value">28.4</span>
+          <span class="hero-unit" id="hero-unit">°C</span>
+        </div>
+        <div style="font-size:16px;font-weight:700;color:var(--hero-ink);margin-top:-2px;" id="hero-condition-text">
+          Partly Cloudy
+        </div>
+        <div class="hero-regime-wrap">
+          <span class="regime-status-dot" aria-hidden="true"></span>
+          <span class="hero-regime" id="hero-regime">Pre-Monsoon Convective · Pre-Monsoon</span>
+        </div>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-top">
+            <span class="stat-label">Rain Prob</span>
+            <svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
+          </div>
+          <span class="stat-value" id="stat-rain-prob">42% (6.2 mm)</span>
+        </div>
+
+        <div class="stat">
+          <div class="stat-top">
+            <span class="stat-label">Wind Speed</span>
+            <svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/></svg>
+          </div>
+          <span class="stat-value" id="stat-wind">12.5 km/h (WSW)</span>
+        </div>
+
+        <div class="stat">
+          <div class="stat-top">
+            <span class="stat-label">Humidity</span>
+            <svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
+          </div>
+          <span class="stat-value" id="stat-humidity">68%</span>
+        </div>
+
+        <div class="stat">
+          <div class="stat-top">
+            <span class="stat-label">Confidence</span>
+            <svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+          </div>
+          <span class="stat-value" id="stat-confidence">91%</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10-Day Forecast Section -->
+  <section class="section" id="forecast-10day">
+    <div class="section-header">
+      <div class="section-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+        <span>Extended Forecast</span>
+      </div>
+      <h2 class="section-title">10-Day Blended Weather Outlook</h2>
+      <p class="section-subtitle">
+        Switch variables using the topbar tabs (Temperature, Rainfall, Wind) to explore calibrated multi-source predictions.
+      </p>
+    </div>
+
+    <div class="forecast-strip" id="dashboard-forecast-strip"></div>
+
+    <div class="grid-main" style="margin-top:10px;">
+      <div class="panel panel-chart">
+        <div class="panel-head">
+          <div>
+            <h2>10-Day Trajectory Analysis</h2>
+            <p>Harmonized prediction curve with multi-model confidence bounds</p>
+          </div>
+          <div class="panel-badge">Dynamic Blend</div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="forecast-variable-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Forecast Confidence Decay</h2>
+            <p>Predictability degradation curve over lead time horizon</p>
+          </div>
+          <div class="panel-badge">Lead Time Skill</div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="confidence-trend-chart"></canvas>
+        </div>
+        <div style="margin-top:14px;font-size:11.5px;color:var(--ink-muted);line-height:1.4;">
+          * Confidence scores are illustrative demonstration values reflecting historical ECMWF and AI validation across lead days 1 to 10.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Model Intelligence Section -->
+  <section class="section" id="model-intelligence">
+    <div class="section-header">
+      <div class="section-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        <span>Model Harmonization</span>
+      </div>
+      <h2 class="section-title">Model Intelligence & Dynamic Weights</h2>
+      <p class="section-subtitle">
+        How BlitzCast assigns adaptive weights to physical NWP, AI, and ensemble models for the selected location.
+      </p>
+    </div>
+
+    <div class="grid-main">
+      <div class="panel panel-weights">
+        <div class="panel-head">
+          <div>
+            <h2>Current Model Contributions</h2>
+            <p>Current blend for this region, season, and regime</p>
+          </div>
+          <span class="card-lead-badge">Dominant: ECMWF AIFS</span>
+        </div>
+        <div class="weight-bars" id="dashboard-weight-bars"></div>
+        <div style="margin-top:16px;padding:12px;border-radius:10px;background:var(--surface-soft);border:1px solid var(--hairline);font-size:12.5px;color:var(--ink-secondary);">
+          <strong>Adaptive Rule:</strong> Model weights adapt dynamically according to region, lead time, season and weather regime.
+        </div>
+      </div>
+
+      <div class="panel panel-table">
+        <div class="panel-head">
+          <div>
+            <h2>Model Skill Comparison</h2>
+            <p>Held-out accuracy benchmarks for selected region</p>
+          </div>
+          <div class="panel-badge">Demo Comparison</div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Model Pipeline</th>
+                <th>MAE</th>
+                <th>RMSE</th>
+                <th>Bias</th>
+              </tr>
+            </thead>
+            <tbody id="dashboard-comparison-body"></tbody>
+          </table>
+        </div>
+        <div style="font-size:11px;color:var(--ink-muted);margin-top:12px;">
+          * Illustrative demonstration values for SIH 2026. Does not represent final measured empirical results.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Extreme Weather Alerts Section -->
+  <section class="section" id="alerts-section">
+    <div class="section-header">
+      <div class="section-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></svg>
+        <span>Severe Weather Guidance</span>
+      </div>
+      <h2 class="section-title">Extreme Weather Alerts</h2>
+      <p class="section-subtitle">
+        Proactive alerts calibrated across heavy rainfall, heat surges, and high-wind events.
+      </p>
+    </div>
+
+    <div class="extreme-grid" id="dashboard-extreme-alerts"></div>
+  </section>
+
+  <!-- Regional Model Weight Map Section -->
+  <section class="section" id="regional-map-section">
+    <div class="section-header">
+      <div class="section-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/></svg>
+        <span>Pan-India Trust</span>
+      </div>
+      <h2 class="section-title">Regional Model Reliability</h2>
+      <p class="section-subtitle">
+        Demonstrating the SIH requirement: Show which model is more reliable across distinct geographical regions of India.
+      </p>
+    </div>
+
+    <div class="region-weight-grid" id="dashboard-region-grid"></div>
+  </section>
+</main>
+
+<!-- Custom Unsubscribe Confirmation & Optional Feedback Modal -->
+<div class="modal-backdrop" id="unsub-modal" role="dialog" aria-modal="true" aria-labelledby="modal-unsub-title">
+  <div class="modal-dialog">
+    <div class="modal-head">
+      <div class="modal-icon-alert">⚠️</div>
+      <div style="flex:1;">
+        <div class="modal-title" id="modal-unsub-title">Are you sure you want to unsubscribe?</div>
+      </div>
+      <button class="modal-close-btn" id="btn-close-modal" type="button" aria-label="Close modal">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <p style="margin:0;">
+        You will stop receiving 10-day weather forecasts and weather alerts on your registered email.
+      </p>
+
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--ink-muted);text-transform:uppercase;margin-bottom:8px;">
+          Optional: Tell us why you're unsubscribing
+        </div>
+        <div class="reasons-box" id="unsub-reasons-group"></div>
+      </div>
+
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--ink-muted);text-transform:uppercase;margin-bottom:6px;">
+          Other feedback (optional)
+        </div>
+        <textarea class="feedback-textarea" id="unsub-feedback-input" placeholder="Any suggestions on how we can improve BlitzCast forecasts?"></textarea>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="btn-keep-sub" type="button">Keep Subscription</button>
+      <button class="btn btn-danger" id="btn-confirm-unsub" type="button">Yes, Unsubscribe</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-content">
+    <span>BlitzCast Weather Intelligence · Dynamic Machine Learning Ensemble</span>
+    <span class="footer-dot">•</span>
+    <span>Real-time NWP & AI Forecast Harmonization</span>
+    <span class="footer-dot">•</span>
+    <span>Smart India Hackathon 2026</span>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/blitzcast-data.js') }}"></script>
+<script src="{{ url_for('static', filename='js/subscription.js') }}"></script>
+</body>
+</html>
