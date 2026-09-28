@@ -2,6 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 from datetime import date, timedelta
+from db import get_engine
 
 RNG = np.random.default_rng(7)
 
@@ -161,11 +162,17 @@ def simulate_model_forecasts(truth: pd.DataFrame, lead_h: int, rng):
     })
 
 
+def ensure_schema(engine):
+    schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "schema.sql")
+    with open(schema_path) as f:
+        schema_sql = f.read()
+    with engine.begin() as conn:
+        conn.exec_driver_sql(schema_sql)
+
+
 def main():
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    dataset_dir = os.path.join(base_dir, "datasets")
-    for d in ["observations", "raw", "processed"]:
-        os.makedirs(os.path.join(dataset_dir, d), exist_ok=True)
+    engine = get_engine()
+    ensure_schema(engine)
 
     obs_frames, nwp_frames, ai_frames, ens_frames, processed_frames = [], [], [], [], []
 
@@ -215,11 +222,9 @@ def main():
             processed_frames.append(merged)
 
     observations = pd.concat(obs_frames, ignore_index=True)
-    observations.to_csv(os.path.join(dataset_dir, "observations", "era5_observations.csv"), index=False)
-
-    pd.concat(nwp_frames, ignore_index=True).to_csv(os.path.join(dataset_dir, "raw", "nwp_forecasts.csv"), index=False)
-    pd.concat(ai_frames, ignore_index=True).to_csv(os.path.join(dataset_dir, "raw", "ai_forecasts.csv"), index=False)
-    pd.concat(ens_frames, ignore_index=True).to_csv(os.path.join(dataset_dir, "raw", "ensemble_forecasts.csv"), index=False)
+    nwp = pd.concat(nwp_frames, ignore_index=True)
+    ai = pd.concat(ai_frames, ignore_index=True)
+    ensemble = pd.concat(ens_frames, ignore_index=True)
 
     processed = pd.concat(processed_frames, ignore_index=True)
     cols = ["date", "region", "latitude", "longitude", "forecast_lead_time_hours", "month", "season",
@@ -231,13 +236,22 @@ def main():
             "nwp_rain_hist_mae", "ai_rain_hist_mae", "ensemble_rain_hist_mae",
             "nwp_wind_hist_mae", "ai_wind_hist_mae", "ensemble_wind_hist_mae"]
     processed = processed[cols].sort_values(["region", "date", "forecast_lead_time_hours"])
-    processed.to_csv(os.path.join(dataset_dir, "processed", "blitzcast_training_data.csv"), index=False)
 
-    print(f"datasets/observations/era5_observations.csv     {len(observations):>7,} rows")
-    print(f"datasets/raw/nwp_forecasts.csv                   {sum(len(f) for f in nwp_frames):>7,} rows")
-    print(f"datasets/raw/ai_forecasts.csv                    {sum(len(f) for f in ai_frames):>7,} rows")
-    print(f"datasets/raw/ensemble_forecasts.csv              {sum(len(f) for f in ens_frames):>7,} rows")
-    print(f"datasets/processed/blitzcast_training_data.csv   {len(processed):>7,} rows")
+    with engine.begin() as conn:
+        for table in ["observations", "raw_nwp_forecasts", "raw_ai_forecasts", "raw_ensemble_forecasts", "processed_training_data"]:
+            conn.exec_driver_sql(f"TRUNCATE TABLE {table}")
+
+    observations.to_sql("observations", engine, if_exists="append", index=False)
+    nwp.to_sql("raw_nwp_forecasts", engine, if_exists="append", index=False)
+    ai.to_sql("raw_ai_forecasts", engine, if_exists="append", index=False)
+    ensemble.to_sql("raw_ensemble_forecasts", engine, if_exists="append", index=False)
+    processed.to_sql("processed_training_data", engine, if_exists="append", index=False)
+
+    print(f"observations              {len(observations):>7,} rows -> table observations")
+    print(f"raw_nwp_forecasts         {len(nwp):>7,} rows -> table raw_nwp_forecasts")
+    print(f"raw_ai_forecasts          {len(ai):>7,} rows -> table raw_ai_forecasts")
+    print(f"raw_ensemble_forecasts    {len(ensemble):>7,} rows -> table raw_ensemble_forecasts")
+    print(f"processed_training_data   {len(processed):>7,} rows -> table processed_training_data")
 
 
 if __name__ == "__main__":
