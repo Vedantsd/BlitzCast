@@ -26,18 +26,16 @@ def get_data():
 
 
 @app.route("/")
-def index():
-    data = get_data()
-    return render_template("index.html", regions=data["regions"], targets=data["targets"])
-
-
-# BlitzCast Forecast Page (Public-facing, fully static/mock data driven)
-@app.route("/forecast")
 def forecast():
     return render_template("forecast.html")
 
 
-# BlitzCast User Subscription Dashboard (Static/mock data driven)
+@app.route("/dashboard")
+def dashboard():
+    data = get_data()
+    return render_template("dashboard.html", regions=data["regions"], targets=data["targets"])
+
+
 @app.route("/subscription")
 def subscription():
     return render_template("subscription.html")
