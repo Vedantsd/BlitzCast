@@ -41,6 +41,11 @@ def subscription():
     return render_template("subscription.html")
 
 
+@app.route("/login")
+def login():
+    return render_template("login.html")
+
+
 @app.route("/api/regions")
 def api_regions():
     return jsonify(get_data()["regions"])
