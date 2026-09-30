@@ -100,6 +100,7 @@
       </div>
 
       <form id="login-form" class="auth-form" novalidate>
+        <input type="hidden" id="next-url" value="{{ next_url }}">
         <div class="auth-field">
           <label for="email">Email address</label>
           <div class="auth-input-wrap">
@@ -139,8 +140,7 @@
         <p class="auth-banner" id="auth-banner" role="alert"></p>
       </form>
 
-      <div class="auth-divider"><span>New to BlitzCast?</span></div>
-      <a class="auth-secondary-btn" href="/subscription">Create an account</a>
+      <p class="auth-footnote">Accounts are provisioned by your BlitzCast administrator. Contact them if you need access.</p>
     </div>
   </section>
 </main>

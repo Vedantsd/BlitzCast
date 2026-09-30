@@ -1,3 +1,5 @@
+/* BlitzCast — Sign In */
+
 .auth-body {
   min-height: 100vh;
   overflow-x: hidden;
@@ -44,6 +46,9 @@
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
 }
 
+/* ============================================================
+   Left Showcase Panel
+   ============================================================ */
 .auth-showcase {
   position: relative;
   display: flex;
@@ -174,6 +179,9 @@
   line-height: 1.35;
 }
 
+/* ============================================================
+   Right Form Panel
+   ============================================================ */
 .auth-panel {
   display: flex;
   align-items: center;
@@ -451,54 +459,17 @@
   display: block;
 }
 
-.auth-divider {
-  position: relative;
+.auth-footnote {
+  margin: 4px 0 0;
   text-align: center;
-  margin: 2px 0;
-}
-
-.auth-divider::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 1px;
-  background: var(--hairline);
-}
-
-.auth-divider span {
-  position: relative;
-  padding: 0 12px;
-  background: var(--page);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 12.5px;
+  line-height: 1.5;
   color: var(--ink-muted);
 }
 
-.auth-secondary-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 11px;
-  border-radius: 12px;
-  border: 1px solid var(--header-control-border);
-  background: var(--header-control-bg);
-  color: var(--ink);
-  font-family: "Plus Jakarta Sans", sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all 180ms ease;
-}
-
-.auth-secondary-btn:hover {
-  border-color: var(--yellow);
-  background: var(--header-control-hover);
-  transform: translateY(-1px);
-}
-
+/* ============================================================
+   Responsive
+   ============================================================ */
 @media (max-width: 900px) {
   .auth-shell {
     grid-template-columns: 1fr;

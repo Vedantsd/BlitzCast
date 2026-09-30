@@ -426,6 +426,50 @@ h1, h2, h3, h4 {
   stroke-width: 2.4;
 }
 
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--header-ink);
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--header-control-border);
+  background: var(--header-control-bg);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.user-chip svg {
+  color: var(--yellow-deep);
+}
+
+.logout-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--header-control-border);
+  background: var(--header-control-bg);
+  color: var(--ink-muted);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+  transition: all 180ms ease;
+}
+
+.logout-link:hover {
+  color: var(--bad);
+  border-color: var(--bad);
+  background: var(--bad-bg);
+}
+
 /* ============================================================
    Sun & Moon Theme Toggle Button
    ============================================================ */

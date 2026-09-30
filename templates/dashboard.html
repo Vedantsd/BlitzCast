@@ -69,9 +69,17 @@
         {% endfor %}
       </div>
 
-      <!-- Sun & Moon Theme Toggle Button -->
+      <div class="user-menu">
+        <span class="user-chip">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          {{ current_user_name }}
+        </span>
+        <a class="logout-link" href="/logout" title="Log out">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        </a>
+      </div>
+
       <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme" title="Switch theme">
-        <!-- Sun icon (shown in light mode) -->
         <svg class="theme-icon theme-icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="12" cy="12" r="4"></circle>
           <path d="M12 2v2"></path>
@@ -83,7 +91,6 @@
           <path d="m6.34 17.66-1.41 1.41"></path>
           <path d="m19.07 4.93-1.41 1.41"></path>
         </svg>
-        <!-- Moon icon (shown in dark mode) -->
         <svg class="theme-icon theme-icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
         </svg>
@@ -93,7 +100,6 @@
 </header>
 
 <main>
-  <!-- Hero Section -->
   <section class="hero" id="hero-card">
     <div class="hero-backdrop" aria-hidden="true"></div>
     <div class="hero-content">
@@ -145,7 +151,6 @@
     </div>
   </section>
 
-  <!-- Grid Main: Chart & Dynamic Weights -->
   <section class="grid-main">
     <div class="panel panel-chart">
       <div class="panel-head">
@@ -172,7 +177,6 @@
     </div>
   </section>
 
-  <!-- Model Comparison Table -->
   <section class="panel panel-table">
     <div class="panel-head">
       <div>
@@ -197,7 +201,6 @@
     </div>
   </section>
 
-  <!-- Grid Secondary: Regional Map Weights & Extreme Weather Watch -->
   <section class="grid-secondary">
     <div class="panel panel-map">
       <div class="panel-head">

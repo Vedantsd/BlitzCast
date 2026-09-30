@@ -76,7 +76,27 @@ form.addEventListener("submit", (event) => {
   submitButton.classList.add("is-loading");
   submitButton.disabled = true;
 
-  setTimeout(() => {
-    window.location.href = "/dashboard";
-  }, 900);
+  const nextUrl = document.getElementById("next-url")?.value || "/dashboard";
+  const remember = document.getElementById("remember")?.checked || false;
+
+  fetch("/api/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password, remember, next: nextUrl }),
+  })
+    .then((response) => response.json().then((data) => ({ status: response.status, data })))
+    .then(({ status, data }) => {
+      if (status === 200 && data.success) {
+        window.location.href = data.redirect || nextUrl;
+        return;
+      }
+      showBanner(data.error || "Invalid email or password.");
+      submitButton.classList.remove("is-loading");
+      submitButton.disabled = false;
+    })
+    .catch(() => {
+      showBanner("Something went wrong. Please try again.");
+      submitButton.classList.remove("is-loading");
+      submitButton.disabled = false;
+    });
 });
