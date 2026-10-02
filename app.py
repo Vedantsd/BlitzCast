@@ -1,15 +1,39 @@
 import os
 import json
 import time
-from flask import Flask, jsonify, render_template
+from datetime import timedelta
+from functools import wraps
+from flask import Flask, jsonify, render_template, request, session, redirect, url_for
 from sqlalchemy import text
 from db import get_engine
+from auth import verify_credentials, touch_last_login
 
 CACHE_TTL_SECONDS = 300
 
 _cache = {"data": None, "loaded_at": 0.0}
 
 app = Flask(__name__)
+
+app.secret_key = os.environ.get("SECRET_KEY")
+if not app.secret_key:
+    raise RuntimeError("SECRET_KEY is not set. Add it to .env locally or to your Vercel project's environment variables.")
+
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+if os.environ.get("VERCEL"):
+    app.config["SESSION_COOKIE_SECURE"] = True
+
+
+def login_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if "user_id" not in session:
+            if request.path.startswith("/api/"):
+                return jsonify({"error": "authentication required"}), 401
+            return redirect(url_for("login", next=request.path))
+        return view(*args, **kwargs)
+    return wrapped
 
 
 def get_data():
@@ -31,9 +55,16 @@ def forecast():
 
 
 @app.route("/dashboard")
+@login_required
 def dashboard():
     data = get_data()
-    return render_template("dashboard.html", regions=data["regions"], targets=data["targets"])
+    return render_template(
+        "dashboard.html",
+        regions=data["regions"],
+        targets=data["targets"],
+        current_user_name=session.get("name"),
+        current_user_role=session.get("role"),
+    )
 
 
 @app.route("/subscription")
@@ -43,15 +74,52 @@ def subscription():
 
 @app.route("/login")
 def login():
-    return render_template("login.html")
+    if "user_id" in session:
+        return redirect(url_for("dashboard"))
+    next_url = request.args.get("next") or url_for("dashboard")
+    return render_template("login.html", next_url=next_url)
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
+
+@app.route("/api/login", methods=["POST"])
+def api_login():
+    body = request.get_json(silent=True) or {}
+    email = (body.get("email") or "").strip()
+    password = body.get("password") or ""
+    remember = bool(body.get("remember"))
+    next_url = body.get("next") or url_for("dashboard")
+
+    if not email or not password:
+        return jsonify({"success": False, "error": "Email and password are required."}), 400
+
+    user = verify_credentials(email, password)
+    if not user:
+        return jsonify({"success": False, "error": "Invalid email or password."}), 401
+
+    session.clear()
+    session.permanent = remember
+    session["user_id"] = user["id"]
+    session["email"] = user["email"]
+    session["name"] = user["name"]
+    session["role"] = user["role"]
+    touch_last_login(user["id"])
+
+    return jsonify({"success": True, "redirect": next_url})
 
 
 @app.route("/api/regions")
+@login_required
 def api_regions():
     return jsonify(get_data()["regions"])
 
 
 @app.route("/api/current/<region>")
+@login_required
 def api_current(region):
     data = get_data()
     if region not in data["current"]:
@@ -60,6 +128,7 @@ def api_current(region):
 
 
 @app.route("/api/forecast/<region>/<target>")
+@login_required
 def api_forecast(region, target):
     data = get_data()
     if target not in data["targets"] or region not in data["forecast"]:
@@ -71,6 +140,7 @@ def api_forecast(region, target):
 
 
 @app.route("/api/timeseries/<region>/<target>")
+@login_required
 def api_timeseries(region, target):
     data = get_data()
     if target not in data["targets"] or region not in data["timeseries"]:
@@ -79,6 +149,7 @@ def api_timeseries(region, target):
 
 
 @app.route("/api/comparison/<region>/<target>")
+@login_required
 def api_comparison(region, target):
     data = get_data()
     if target not in data["targets"] or region not in data["comparison"]:
@@ -87,6 +158,7 @@ def api_comparison(region, target):
 
 
 @app.route("/api/weights-map/<target>")
+@login_required
 def api_weights_map(target):
     data = get_data()
     if target not in data["weights_map"]:
@@ -95,6 +167,7 @@ def api_weights_map(target):
 
 
 @app.route("/api/extreme/<region>")
+@login_required
 def api_extreme(region):
     data = get_data()
     if region not in data["extreme"]:
