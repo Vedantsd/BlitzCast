@@ -26,16 +26,42 @@ def touch_last_login(user_id):
         conn.execute(text("UPDATE users SET last_login_at = now() WHERE id = :id"), {"id": user_id})
 
 
+def get_user_by_id(user_id):
+    with get_engine().connect() as conn:
+        row = conn.execute(
+            text("SELECT id, email, name, role, is_active, created_at, last_login_at FROM users WHERE id = :id"),
+            {"id": user_id},
+        ).mappings().fetchone()
+    return dict(row) if row else None
+
+
 def create_user(email, name, password, role="analyst"):
     password_hash = generate_password_hash(password)
     with get_engine().begin() as conn:
-        conn.execute(
+        result = conn.execute(
             text("""
                 INSERT INTO users (email, name, password_hash, role)
                 VALUES (:email, :name, :password_hash, :role)
+                RETURNING id
             """),
             {"email": email.lower().strip(), "name": name.strip(), "password_hash": password_hash, "role": role},
         )
+        return result.scalar()
+
+
+def delete_user_by_id(user_id):
+    with get_engine().begin() as conn:
+        result = conn.execute(text("DELETE FROM users WHERE id = :id"), {"id": user_id})
+        return result.rowcount
+
+
+def set_active_by_id(user_id, is_active):
+    with get_engine().begin() as conn:
+        result = conn.execute(
+            text("UPDATE users SET is_active = :is_active WHERE id = :id"),
+            {"id": user_id, "is_active": is_active},
+        )
+        return result.rowcount
 
 
 def delete_user(email):
