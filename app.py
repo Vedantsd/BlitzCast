@@ -5,8 +5,17 @@ from datetime import timedelta
 from functools import wraps
 from flask import Flask, jsonify, render_template, request, session, redirect, url_for
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
 from db import get_engine
-from auth import verify_credentials, touch_last_login
+from auth import (
+    verify_credentials,
+    touch_last_login,
+    list_users,
+    create_user,
+    get_user_by_id,
+    delete_user_by_id,
+    set_active_by_id,
+)
 
 CACHE_TTL_SECONDS = 300
 
@@ -32,6 +41,21 @@ def login_required(view):
             if request.path.startswith("/api/"):
                 return jsonify({"error": "authentication required"}), 401
             return redirect(url_for("login", next=request.path))
+        return view(*args, **kwargs)
+    return wrapped
+
+
+def admin_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if "user_id" not in session:
+            if request.path.startswith("/api/"):
+                return jsonify({"error": "authentication required"}), 401
+            return redirect(url_for("login", next=request.path))
+        if session.get("role") != "admin":
+            if request.path.startswith("/api/"):
+                return jsonify({"error": "admin access required"}), 403
+            return redirect(url_for("dashboard"))
         return view(*args, **kwargs)
     return wrapped
 
@@ -110,6 +134,71 @@ def api_login():
     touch_last_login(user["id"])
 
     return jsonify({"success": True, "redirect": next_url})
+
+
+@app.route("/admin")
+@admin_required
+def admin_page():
+    return render_template(
+        "admin.html",
+        current_user_name=session.get("name"),
+        current_user_role=session.get("role"),
+        current_user_id=session.get("user_id"),
+    )
+
+
+@app.route("/api/admin/users", methods=["GET"])
+@admin_required
+def api_admin_list_users():
+    return jsonify(list_users())
+
+
+@app.route("/api/admin/users", methods=["POST"])
+@admin_required
+def api_admin_create_user():
+    body = request.get_json(silent=True) or {}
+    email = (body.get("email") or "").strip()
+    name = (body.get("name") or "").strip()
+    role = body.get("role") or "analyst"
+    password = body.get("password") or ""
+
+    if not email or not name or not password:
+        return jsonify({"success": False, "error": "Name, email, and password are required."}), 400
+    if role not in ("admin", "analyst"):
+        return jsonify({"success": False, "error": "Invalid role."}), 400
+    if len(password) < 8:
+        return jsonify({"success": False, "error": "Password must be at least 8 characters."}), 400
+
+    try:
+        new_id = create_user(email, name, password, role)
+    except IntegrityError:
+        return jsonify({"success": False, "error": "A user with that email already exists."}), 409
+
+    return jsonify({"success": True, "user": get_user_by_id(new_id)}), 201
+
+
+@app.route("/api/admin/users/<int:user_id>", methods=["DELETE"])
+@admin_required
+def api_admin_delete_user(user_id):
+    if user_id == session.get("user_id"):
+        return jsonify({"success": False, "error": "You cannot delete your own account."}), 400
+    count = delete_user_by_id(user_id)
+    if not count:
+        return jsonify({"success": False, "error": "User not found."}), 404
+    return jsonify({"success": True})
+
+
+@app.route("/api/admin/users/<int:user_id>/active", methods=["PATCH"])
+@admin_required
+def api_admin_set_active(user_id):
+    body = request.get_json(silent=True) or {}
+    is_active = bool(body.get("is_active"))
+    if user_id == session.get("user_id") and not is_active:
+        return jsonify({"success": False, "error": "You cannot deactivate your own account."}), 400
+    count = set_active_by_id(user_id, is_active)
+    if not count:
+        return jsonify({"success": False, "error": "User not found."}), 404
+    return jsonify({"success": True})
 
 
 @app.route("/api/regions")
