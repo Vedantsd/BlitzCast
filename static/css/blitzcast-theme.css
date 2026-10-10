@@ -1486,3 +1486,284 @@ html {
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
 }
+
+@media (max-width: 960px) {
+  .topbar-inner {
+    align-items: flex-start;
+  }
+
+  .topbar-inner > .nav-links {
+    order: 3;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .topbar-inner > div:first-child {
+    min-width: 0;
+  }
+
+  .nav-links {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-link {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .topbar-inner {
+    gap: 10px;
+    padding: 12px 16px;
+  }
+
+  .topbar-inner > div:first-child {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 10px !important;
+  }
+
+  .topbar-inner > div:first-child > .nav-links {
+    width: 100%;
+    margin-left: 0 !important;
+  }
+
+  .topbar-inner > .controls {
+    order: 2;
+    width: 100%;
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .control-group {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .select-wrapper,
+  .select-wrapper select {
+    width: 100%;
+  }
+
+  .target-tabs {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .target-tab {
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  main {
+    gap: 20px;
+    padding: 20px 16px 40px;
+  }
+
+  .landing-hero {
+    border-radius: 18px;
+    padding: 28px 20px;
+  }
+
+  .landing-hero-grid {
+    gap: 24px;
+  }
+
+  .hero-headline {
+    font-size: clamp(34px, 9vw, 48px);
+  }
+
+  .hero-actions {
+    margin-bottom: 24px;
+  }
+
+  .hero-visual-card,
+  .subscription-panel,
+  .india-map-card {
+    min-width: 0;
+    padding: 20px;
+  }
+
+  .subscription-panel {
+    align-items: stretch;
+    gap: 18px;
+  }
+
+  .sub-left {
+    max-width: none;
+  }
+
+  .sub-form {
+    align-items: stretch;
+  }
+
+  .sub-input-wrap {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .sub-input {
+    box-sizing: border-box;
+  }
+
+  .sub-form .btn {
+    flex: 1 1 auto;
+  }
+
+  .sub-active-banner {
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .sub-status-info {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .svg-map-wrapper {
+    height: min(70vw, 320px);
+    min-height: 220px;
+  }
+
+  .pipeline-container {
+    padding: 20px 16px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .forecast-strip {
+    grid-auto-columns: minmax(110px, 1fr);
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .forecast-day-card {
+    scroll-snap-align: start;
+  }
+
+  .team-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .footer-content {
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 16px;
+    text-align: center;
+  }
+
+  .footer-dot {
+    display: none;
+  }
+
+  .toast-notice {
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 420px) {
+  .topbar-inner {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  main {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .brand {
+    gap: 8px;
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+  }
+
+  .brand-name {
+    font-size: 19px;
+  }
+
+  .brand-tagline {
+    font-size: 9px;
+  }
+
+  .nav-links {
+    gap: 4px;
+  }
+
+  .nav-link {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .landing-hero {
+    padding: 24px 16px;
+  }
+
+  .hero-visual-card,
+  .subscription-panel,
+  .india-map-card {
+    padding: 16px;
+  }
+
+  .hero-metric-chips {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .metric-chip {
+    min-width: 0;
+    padding: 10px;
+  }
+
+  .metric-chip-value {
+    font-size: 17px;
+    overflow-wrap: anywhere;
+  }
+
+  .card-lead-banner {
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .section {
+    gap: 16px;
+  }
+
+  .section-title {
+    font-size: clamp(23px, 7vw, 30px);
+  }
+
+  .team-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .modal-backdrop {
+    align-items: flex-end;
+    padding: 10px;
+  }
+
+  .modal-dialog {
+    max-height: 90dvh;
+    padding: 20px 16px;
+    border-radius: 18px;
+  }
+}
