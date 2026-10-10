@@ -1,0 +1,376 @@
+.header-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  text-decoration: none;
+  padding: 9px 14px 9px 12px;
+  border-radius: 10px;
+  background: var(--header-control-bg);
+  border: 1px solid var(--header-control-border);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+  transition: all 180ms ease;
+}
+
+.header-link:hover {
+  color: var(--ink);
+  border-color: var(--yellow);
+  background: var(--header-control-hover);
+}
+
+.admin-intro {
+  animation: enter 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.admin-intro h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.admin-intro p {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: var(--ink-muted);
+  max-width: 560px;
+}
+
+/* ============================================================
+   Users Table
+   ============================================================ */
+.name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.you-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--ink-muted);
+  border: 1px solid var(--hairline);
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.role-badge.role-admin {
+  background: color-mix(in srgb, var(--purple) 16%, transparent);
+  color: var(--purple);
+}
+
+.role-badge.role-analyst {
+  background: color-mix(in srgb, var(--info) 16%, transparent);
+  color: var(--info);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.status-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status-badge.status-active {
+  background: var(--good-bg);
+  color: var(--good);
+}
+
+.status-badge.status-disabled {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+
+.row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.icon-btn:hover {
+  color: var(--ink);
+  border-color: var(--border-strong);
+  background: var(--surface-soft);
+}
+
+.icon-btn.danger:hover {
+  color: var(--bad);
+  border-color: var(--bad);
+  background: var(--bad-bg);
+}
+
+.icon-btn.danger.confirming {
+  color: var(--bad);
+  border-color: var(--bad);
+  background: var(--bad-bg);
+}
+
+.icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.icon-btn:disabled:hover {
+  color: var(--ink-muted);
+  border-color: var(--hairline);
+  background: var(--surface);
+}
+
+/* ============================================================
+   Add Analyst Form
+   ============================================================ */
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.admin-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-secondary);
+}
+
+.admin-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.admin-input-icon {
+  position: absolute;
+  left: 13px;
+  color: var(--ink-subtle);
+  pointer-events: none;
+}
+
+.admin-input-wrap input {
+  width: 100%;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  padding: 11px 14px 11px 38px;
+  border: 1px solid var(--header-control-border);
+  border-radius: 10px;
+  background-color: var(--header-control-bg);
+  transition: all 180ms ease;
+}
+
+.admin-input-wrap-password input {
+  padding-right: 90px;
+}
+
+.admin-input-wrap input::placeholder {
+  color: var(--ink-subtle);
+}
+
+.admin-input-wrap input:hover {
+  border-color: var(--hover-border);
+}
+
+.admin-input-wrap input:focus-visible {
+  outline: none;
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.admin-field.has-error .admin-input-wrap input {
+  border-color: var(--bad);
+}
+
+.admin-generate-btn {
+  position: absolute;
+  right: 6px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 7px;
+  background: var(--surface-soft);
+  color: var(--ink-secondary);
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.admin-generate-btn:hover {
+  background: var(--yellow-light);
+  color: var(--yellow-deep);
+}
+
+.admin-select-wrapper select {
+  width: 100%;
+}
+
+.admin-error {
+  min-height: 15px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--bad);
+}
+
+.admin-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px;
+  margin-top: 4px;
+  border: none;
+  border-radius: 12px;
+  background: var(--yellow);
+  color: #1e1b18;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+  transition: all 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.admin-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+}
+
+.admin-submit:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.admin-submit-spinner {
+  display: none;
+  animation: spin 800ms linear infinite;
+}
+
+.admin-submit.is-loading {
+  cursor: progress;
+  opacity: 0.9;
+}
+
+.admin-submit.is-loading .admin-submit-spinner {
+  display: block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.admin-credential-box {
+  margin-top: 4px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: var(--good-bg);
+  border: 1px solid color-mix(in srgb, var(--good) 35%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: enter 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.admin-credential-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--good);
+}
+
+.admin-credential-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.admin-credential-row span {
+  color: var(--ink-muted);
+  font-weight: 600;
+}
+
+.admin-credential-row code {
+  font-family: "Space Grotesk", monospace;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--surface);
+  padding: 3px 9px;
+  border-radius: 6px;
+  border: 1px solid var(--hairline);
+}
+
+.admin-copy-btn {
+  align-self: flex-start;
+  padding: 7px 14px;
+  border: 1px solid color-mix(in srgb, var(--good) 40%, transparent);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--good);
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.admin-copy-btn:hover {
+  background: var(--good);
+  color: var(--white);
+}
+
+@media (max-width: 680px) {
+  .header-link span {
+    display: none;
+  }
+}
